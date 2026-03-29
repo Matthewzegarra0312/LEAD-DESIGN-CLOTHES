@@ -1,4 +1,5 @@
-Demo 
+Try our demo through this link: https://lead-design-eight.vercel.app
+
 # LEAD Design Clothes
 
 AI-powered apparel mockup studio to design, customize, and export garment previews from the browser.
