@@ -71,7 +71,7 @@ export function TextToolPanel() {
     },
   } as const;
 
-  const [text, setText] = useState(copy[locale].placeholder);
+  const [text, setText] = useState<string>(copy[locale].placeholder);
   const [fontFamily, setFontFamily] = useState("Manrope");
   const [fontSize, setFontSize] = useState(48);
   const [fontStyle, setFontStyle] = useState<"normal" | "bold" | "italic" | "bold italic">("bold");
