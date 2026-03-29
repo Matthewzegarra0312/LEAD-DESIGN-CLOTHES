@@ -19,7 +19,7 @@ type Category = "all" | "tops" | "bottoms" | "outerwear" | "accessories";
 export default function StudioPage() {
   const [category, setCategory] = useState<Category>("all");
   const [search, setSearch] = useState("");
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   const filtered = useMemo<Garment[]>(() => {
     return GARMENTS.filter((g) => {
@@ -32,12 +32,21 @@ export default function StudioPage() {
   }, [category, search]);
 
   const categories: { id: Category; label: string }[] = [
-    { id: "all", label: "All" },
-    { id: "tops", label: "Tops" },
-    { id: "bottoms", label: "Bottoms" },
-    { id: "outerwear", label: "Outerwear" },
-    { id: "accessories", label: "Accessories" },
+    { id: "all", label: localeLabel("all") },
+    { id: "tops", label: localeLabel("tops") },
+    { id: "bottoms", label: localeLabel("bottoms") },
+    { id: "outerwear", label: localeLabel("outerwear") },
+    { id: "accessories", label: localeLabel("accessories") },
   ];
+
+  function localeLabel(id: Category) {
+    const labels = {
+      en: { all: "All", tops: "Tops", bottoms: "Bottoms", outerwear: "Outerwear", accessories: "Accessories" },
+      es: { all: "Todo", tops: "Polos", bottoms: "Pantalones", outerwear: "Abrigos", accessories: "Accesorios" },
+      pt: { all: "Todos", tops: "Partes de cima", bottoms: "Partes de baixo", outerwear: "Agasalhos", accessories: "Acessórios" },
+    } as const;
+    return labels[locale][id];
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -57,7 +66,7 @@ export default function StudioPage() {
         {/* ── Sidebar filters ── */}
         <aside className="w-64 shrink-0 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto bg-surface-container-lowest border-r border-outline-variant/10 p-6 no-scrollbar">
           <h2 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-4">
-            Category
+            {locale === "es" ? "Categoría" : locale === "pt" ? "Categoria" : "Category"}
           </h2>
           <nav className="flex flex-col gap-1 mb-8">
             {categories.map(({ id, label }) => (
@@ -76,10 +85,14 @@ export default function StudioPage() {
           </nav>
 
           <h2 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-4">
-            Print Areas
+            {locale === "es" ? "Áreas de impresión" : locale === "pt" ? "Áreas de impressão" : "Print Areas"}
           </h2>
           <div className="flex flex-col gap-2 mb-8">
-            {["1 area", "2 areas", "3+ areas"].map((opt) => (
+            {[
+              locale === "es" ? "1 área" : locale === "pt" ? "1 área" : "1 area",
+              locale === "es" ? "2 áreas" : locale === "pt" ? "2 áreas" : "2 areas",
+              locale === "es" ? "3+ áreas" : locale === "pt" ? "3+ áreas" : "3+ areas",
+            ].map((opt) => (
               <label key={opt} className="flex items-center gap-2 cursor-pointer group">
                 <span className="w-4 h-4 rounded border border-outline-variant group-hover:border-primary transition-colors" />
                 <span className="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">
@@ -90,7 +103,7 @@ export default function StudioPage() {
           </div>
 
           <h2 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-4">
-            Colors
+            {locale === "es" ? "Colores" : locale === "pt" ? "Cores" : "Colors"}
           </h2>
           <div className="flex flex-wrap gap-2">
             {["#191c1e", "#FFFFFF", "#000080", "#d00000", "#4b5320", "#800020", "#9ca3af", "#c2b280"].map((hex) => (
@@ -120,7 +133,7 @@ export default function StudioPage() {
               </svg>
               <input
                 type="text"
-                placeholder="Search garments…"
+                placeholder={locale === "es" ? "Buscar prendas..." : locale === "pt" ? "Buscar peças..." : "Search garments..."}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-10 py-2.5 text-sm text-on-surface placeholder-outline focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
@@ -131,7 +144,7 @@ export default function StudioPage() {
           {/* Recently used */}
           <section className="mb-10">
             <h2 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-4">
-              Recently Used
+              {locale === "es" ? "Usados recientemente" : locale === "pt" ? "Usados recentemente" : "Recently Used"}
             </h2>
             <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
               {GARMENTS.slice(0, 3).map((g) => (
@@ -159,7 +172,7 @@ export default function StudioPage() {
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xs font-label font-bold text-outline uppercase tracking-widest">
-                All Garments{" "}
+                {locale === "es" ? "Todas las prendas" : locale === "pt" ? "Todas as peças" : "All Garments"}{" "}
                 <span className="normal-case text-on-surface-variant font-normal">
                   ({filtered.length})
                 </span>
@@ -173,8 +186,12 @@ export default function StudioPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="font-headline font-bold">No garments found</p>
-                <p className="text-sm mt-1">Try adjusting your filters</p>
+                <p className="font-headline font-bold">
+                  {locale === "es" ? "No se encontraron prendas" : locale === "pt" ? "Nenhuma peça encontrada" : "No garments found"}
+                </p>
+                <p className="text-sm mt-1">
+                  {locale === "es" ? "Prueba ajustando los filtros" : locale === "pt" ? "Tente ajustar os filtros" : "Try adjusting your filters"}
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -192,6 +209,7 @@ export default function StudioPage() {
 
 function GarmentCard({ garment }: { garment: Garment }) {
   const [hovered, setHovered] = useState(false);
+  const { locale } = useLanguage();
 
   return (
     <div
@@ -214,7 +232,7 @@ function GarmentCard({ garment }: { garment: Garment }) {
           <div className="absolute inset-0 bg-on-surface/40 flex items-center justify-center">
             <Link href={`/studio/${garment.id}`}>
               <Button variant="key-action" size="sm">
-                Customize
+                {locale === "es" ? "Personalizar" : locale === "pt" ? "Personalizar" : "Customize"}
               </Button>
             </Link>
           </div>
@@ -222,7 +240,11 @@ function GarmentCard({ garment }: { garment: Garment }) {
 
         {/* Print areas badge */}
         <div className="absolute top-3 right-3 px-2 py-1 bg-surface-container-lowest/90 rounded-lg text-[10px] font-bold text-on-surface font-label uppercase">
-          {garment.printAreas} areas
+          {locale === "es"
+            ? `${garment.printAreas} áreas`
+            : locale === "pt"
+              ? `${garment.printAreas} áreas`
+              : `${garment.printAreas} areas`}
         </div>
       </div>
 

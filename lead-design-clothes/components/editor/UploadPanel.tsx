@@ -9,6 +9,7 @@ import { useEditorStore } from "@/lib/store/useEditorStore";
 import { Button } from "@/components/ui/Button";
 import { removeBackground } from "@/lib/services/backgroundRemoval";
 import { cn } from "@/lib/utils/cn";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export function UploadPanel() {
   const addObject = useEditorStore((s) => s.addObject);
@@ -19,6 +20,43 @@ export function UploadPanel() {
   const [dragging, setDragging] = useState(false);
   const [bgRemoving, setBgRemoving] = useState(false);
   const [lastAdded, setLastAdded] = useState<string | null>(null);
+  const { locale } = useLanguage();
+
+  const copy = {
+    en: {
+      title: "Upload",
+      desc: "Add PNG, JPG, SVG, or WEBP graphics to your design.",
+      drop: "Drop to upload",
+      dragDrop: "Drag & drop or click to upload",
+      formats: "PNG, JPG, SVG, WEBP up to 20MB",
+      aiTitle: "AI Background Removal",
+      aiDesc: "Automatically remove backgrounds when uploading.",
+      uploadBg: "Upload + Remove BG",
+      added: "Added:",
+    },
+    es: {
+      title: "Subir",
+      desc: "Agrega gráficos PNG, JPG, SVG o WEBP a tu diseño.",
+      drop: "Suelta para subir",
+      dragDrop: "Arrastra y suelta o haz clic para subir",
+      formats: "PNG, JPG, SVG, WEBP de hasta 20MB",
+      aiTitle: "Eliminación de fondo con IA",
+      aiDesc: "Elimina fondos automáticamente al subir.",
+      uploadBg: "Subir + quitar fondo",
+      added: "Agregado:",
+    },
+    pt: {
+      title: "Enviar",
+      desc: "Adicione gráficos PNG, JPG, SVG ou WEBP ao seu design.",
+      drop: "Solte para enviar",
+      dragDrop: "Arraste e solte ou clique para enviar",
+      formats: "PNG, JPG, SVG, WEBP até 20MB",
+      aiTitle: "Remoção de fundo por IA",
+      aiDesc: "Remova fundos automaticamente ao enviar.",
+      uploadBg: "Enviar + remover fundo",
+      added: "Adicionado:",
+    },
+  } as const;
 
   const processFile = useCallback(
     async (file: File, autoBgRemove = false) => {
@@ -91,10 +129,10 @@ export function UploadPanel() {
     <div className="p-5 flex flex-col gap-5 h-full overflow-y-auto no-scrollbar">
       <div>
         <h3 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-1">
-          Upload
+          {copy[locale].title}
         </h3>
         <p className="text-xs text-on-surface-variant">
-          Add PNG, JPG, SVG, or WEBP graphics to your design.
+          {copy[locale].desc}
         </p>
       </div>
 
@@ -117,9 +155,9 @@ export function UploadPanel() {
           </svg>
         </div>
         <p className="text-sm font-medium text-on-surface">
-          {dragging ? "Drop to upload" : "Drag & drop or click to upload"}
+          {dragging ? copy[locale].drop : copy[locale].dragDrop}
         </p>
-        <p className="text-[11px] text-outline mt-1">PNG, JPG, SVG, WEBP up to 20MB</p>
+        <p className="text-[11px] text-outline mt-1">{copy[locale].formats}</p>
         <input
           ref={inputRef}
           type="file"
@@ -141,9 +179,9 @@ export function UploadPanel() {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-bold text-on-surface mb-0.5">AI Background Removal</p>
+          <p className="text-xs font-bold text-on-surface mb-0.5">{copy[locale].aiTitle}</p>
           <p className="text-[11px] text-on-surface-variant leading-relaxed">
-            Automatically remove backgrounds when uploading.
+            {copy[locale].aiDesc}
           </p>
           <Button
             variant="secondary"
@@ -152,7 +190,7 @@ export function UploadPanel() {
             loading={bgRemoving}
             onClick={() => inputRef.current?.click()}
           >
-            Upload + Remove BG
+            {copy[locale].uploadBg}
           </Button>
         </div>
       </div>
@@ -163,7 +201,9 @@ export function UploadPanel() {
           <svg className="w-4 h-4 text-tertiary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
           </svg>
-          <span className="text-xs text-on-surface truncate">Added: <strong>{lastAdded}</strong></span>
+          <span className="text-xs text-on-surface truncate">
+            {copy[locale].added} <strong>{lastAdded}</strong>
+          </span>
         </div>
       )}
     </div>

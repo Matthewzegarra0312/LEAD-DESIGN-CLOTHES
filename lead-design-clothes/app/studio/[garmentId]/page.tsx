@@ -42,6 +42,7 @@ export default function EditorPage({ params }: PageProps) {
   const setActiveSide = useEditorStore((s) => s.setActiveSide);
   const objects = useEditorStore((s) => s.objects);
   const { t } = useLanguage();
+  const objectSuffix = objects.length !== 1 ? "s" : "";
 
   const stageRef = useRef<Konva.Stage | null>(null);
 
@@ -105,7 +106,7 @@ export default function EditorPage({ params }: PageProps) {
                     : "text-on-surface-variant hover:text-on-surface"
                 }`}
               >
-                {side}
+                {t(`side.${side}`)}
                 {side === "front" && frontCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[9px] font-bold flex items-center justify-center">
                     {frontCount}
@@ -127,14 +128,14 @@ export default function EditorPage({ params }: PageProps) {
             <div className="flex items-center justify-center w-[600px] h-[700px] bg-surface-container rounded-2xl">
               <div className="text-outline text-sm flex flex-col items-center gap-3">
                 <div className="w-8 h-8 border-2 border-outline-variant border-t-primary rounded-full animate-spin" />
-                Loading garment…
+                {t("editor.loadingGarment")}
               </div>
             </div>
           )}
 
           {/* Bottom hint */}
           <p className="text-[11px] text-outline font-label uppercase tracking-widest">
-            Click canvas to deselect · Drag to move · Handles to resize & rotate
+            {t("editor.deselectHint")}
           </p>
         </main>
 
@@ -146,16 +147,16 @@ export default function EditorPage({ params }: PageProps) {
       <div className="h-14 bg-surface-container-lowest border-t border-outline-variant/10 flex items-center justify-between px-6">
         <Link href="/studio">
           <Button variant="ghost" size="sm">
-            ← Back to Catalog
+            {t("editor.backToCatalog")}
           </Button>
         </Link>
         <div className="flex items-center gap-4">
           <span className="text-xs text-outline font-label">
-            {objects.length} object{objects.length !== 1 ? "s" : ""}
+            {t("editor.objectsCount", { count: objects.length, suffix: objectSuffix })}
           </span>
           <Link href={`/studio/${garmentId}/review`}>
             <Button variant="key-action" size="sm">
-              Next: Review →
+              {t("editor.nextReview")}
             </Button>
           </Link>
         </div>

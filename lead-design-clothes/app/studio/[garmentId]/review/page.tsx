@@ -45,7 +45,7 @@ export default function ReviewPage({ params }: PageProps) {
   const setGarment = useEditorStore((s) => s.setGarment);
   const setActiveSide = useEditorStore((s) => s.setActiveSide);
   const objects = useEditorStore((s) => s.objects);
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   const [showExport, setShowExport] = useState(false);
 
@@ -63,47 +63,87 @@ export default function ReviewPage({ params }: PageProps) {
   const checks: Check[] = [
     {
       id: "designs-present",
-      label: "Design Elements Present",
+      label: locale === "es" ? "Elementos de diseño presentes" : locale === "pt" ? "Elementos de design presentes" : "Design Elements Present",
       pass: objects.length > 0,
       detail:
         objects.length > 0
-          ? `${objects.length} object${objects.length > 1 ? "s" : ""} placed`
-          : "No design objects found",
+          ? locale === "es"
+            ? `${objects.length} objeto${objects.length > 1 ? "s" : ""} colocado${objects.length > 1 ? "s" : ""}`
+            : locale === "pt"
+              ? `${objects.length} objeto${objects.length > 1 ? "s" : ""} colocado${objects.length > 1 ? "s" : ""}`
+              : `${objects.length} object${objects.length > 1 ? "s" : ""} placed`
+          : locale === "es"
+            ? "No se encontraron objetos de diseño"
+            : locale === "pt"
+              ? "Nenhum objeto de design encontrado"
+              : "No design objects found",
     },
     {
       id: "front-design",
-      label: "Front Side Designed",
+      label: locale === "es" ? "Frente diseñado" : locale === "pt" ? "Frente desenhada" : "Front Side Designed",
       pass: frontObjects.length > 0,
       detail:
         frontObjects.length > 0
-          ? `${frontObjects.length} object${frontObjects.length > 1 ? "s" : ""} on front`
-          : "Front side is empty",
+          ? locale === "es"
+            ? `${frontObjects.length} objeto${frontObjects.length > 1 ? "s" : ""} en el frente`
+            : locale === "pt"
+              ? `${frontObjects.length} objeto${frontObjects.length > 1 ? "s" : ""} na frente`
+              : `${frontObjects.length} object${frontObjects.length > 1 ? "s" : ""} on front`
+          : locale === "es"
+            ? "El frente está vacío"
+            : locale === "pt"
+              ? "A frente está vazia"
+              : "Front side is empty",
     },
     {
       id: "back-design",
-      label: "Back Side Reviewed",
+      label: locale === "es" ? "Espalda revisada" : locale === "pt" ? "Costas revisadas" : "Back Side Reviewed",
       pass: true, // Back can be intentionally blank
       detail:
         backObjects.length > 0
-          ? `${backObjects.length} object${backObjects.length > 1 ? "s" : ""} on back`
-          : "Back side intentionally blank",
+          ? locale === "es"
+            ? `${backObjects.length} objeto${backObjects.length > 1 ? "s" : ""} en la espalda`
+            : locale === "pt"
+              ? `${backObjects.length} objeto${backObjects.length > 1 ? "s" : ""} nas costas`
+              : `${backObjects.length} object${backObjects.length > 1 ? "s" : ""} on back`
+          : locale === "es"
+            ? "La espalda está intencionalmente vacía"
+            : locale === "pt"
+              ? "As costas estão intencionalmente vazias"
+              : "Back side intentionally blank",
     },
     {
       id: "opacity",
-      label: "No Invisible Objects",
+      label: locale === "es" ? "Sin objetos invisibles" : locale === "pt" ? "Sem objetos invisíveis" : "No Invisible Objects",
       pass: objects.every((o) => o.opacity > 0.05),
       detail:
         objects.some((o) => o.opacity <= 0.05)
-          ? "Some objects have very low opacity"
-          : "All objects visible",
+          ? locale === "es"
+            ? "Algunos objetos tienen opacidad muy baja"
+            : locale === "pt"
+              ? "Alguns objetos têm opacidade muito baixa"
+              : "Some objects have very low opacity"
+          : locale === "es"
+            ? "Todos los objetos son visibles"
+            : locale === "pt"
+              ? "Todos os objetos estão visíveis"
+              : "All objects visible",
     },
     {
       id: "locked",
-      label: "No Locked Objects",
+      label: locale === "es" ? "Sin objetos bloqueados" : locale === "pt" ? "Sem objetos bloqueados" : "No Locked Objects",
       pass: objects.every((o) => !o.locked),
       detail: objects.some((o) => o.locked)
-        ? "Some objects are locked — unlock before exporting"
-        : "All objects unlocked",
+        ? locale === "es"
+          ? "Algunos objetos están bloqueados - desbloquéalos antes de exportar"
+          : locale === "pt"
+            ? "Alguns objetos estão bloqueados - desbloqueie-os antes de exportar"
+            : "Some objects are locked - unlock before exporting"
+        : locale === "es"
+          ? "Todos los objetos están desbloqueados"
+          : locale === "pt"
+            ? "Todos os objetos estão desbloqueados"
+            : "All objects unlocked",
     },
   ];
 
@@ -135,10 +175,14 @@ export default function ReviewPage({ params }: PageProps) {
       <div className="pt-20 pb-16 px-8 max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-headline font-extrabold tracking-tight">
-            Final Review
+            {locale === "es" ? "Revisión final" : locale === "pt" ? "Revisão final" : "Final Review"}
           </h1>
           <p className="text-outline mt-1">
-            Check your design on both sides before exporting.
+            {locale === "es"
+              ? "Revisa tu diseño en ambos lados antes de exportar."
+              : locale === "pt"
+                ? "Verifique seu design nos dois lados antes de exportar."
+                : "Check your design on both sides before exporting."}
           </p>
         </div>
 
@@ -149,9 +193,13 @@ export default function ReviewPage({ params }: PageProps) {
               {/* Front preview */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-sm font-headline font-bold">Front</h2>
+                  <h2 className="text-sm font-headline font-bold">{t("side.front")}</h2>
                   <span className="text-[10px] font-label font-bold text-outline uppercase tracking-widest">
-                    {frontObjects.length} object{frontObjects.length !== 1 ? "s" : ""}
+                    {locale === "es"
+                      ? `${frontObjects.length} objeto${frontObjects.length !== 1 ? "s" : ""}`
+                      : locale === "pt"
+                        ? `${frontObjects.length} objeto${frontObjects.length !== 1 ? "s" : ""}`
+                        : `${frontObjects.length} object${frontObjects.length !== 1 ? "s" : ""}`}
                   </span>
                 </div>
                 <div
@@ -165,9 +213,13 @@ export default function ReviewPage({ params }: PageProps) {
               {/* Back preview */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-sm font-headline font-bold">Back</h2>
+                  <h2 className="text-sm font-headline font-bold">{t("side.back")}</h2>
                   <span className="text-[10px] font-label font-bold text-outline uppercase tracking-widest">
-                    {backObjects.length} object{backObjects.length !== 1 ? "s" : ""}
+                    {locale === "es"
+                      ? `${backObjects.length} objeto${backObjects.length !== 1 ? "s" : ""}`
+                      : locale === "pt"
+                        ? `${backObjects.length} objeto${backObjects.length !== 1 ? "s" : ""}`
+                        : `${backObjects.length} object${backObjects.length !== 1 ? "s" : ""}`}
                   </span>
                 </div>
                 <div
@@ -186,7 +238,7 @@ export default function ReviewPage({ params }: PageProps) {
             <div className="bg-surface-container-lowest rounded-2xl p-6 ambient-shadow">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-headline font-bold text-sm">
-                  Print Readiness
+                  {locale === "es" ? "Preparación para impresión" : locale === "pt" ? "Pronto para impressão" : "Print Readiness"}
                 </h3>
                 <span
                   className={cn(
@@ -196,7 +248,17 @@ export default function ReviewPage({ params }: PageProps) {
                       : "bg-error-container text-on-error-container"
                   )}
                 >
-                  {allPass ? "Ready" : "Issues Found"}
+                  {allPass
+                    ? locale === "es"
+                      ? "Listo"
+                      : locale === "pt"
+                        ? "Pronto"
+                        : "Ready"
+                    : locale === "es"
+                      ? "Problemas encontrados"
+                      : locale === "pt"
+                        ? "Problemas encontrados"
+                        : "Issues Found"}
                 </span>
               </div>
 
@@ -256,25 +318,38 @@ export default function ReviewPage({ params }: PageProps) {
             {garment && (
               <div className="bg-surface-container-lowest rounded-2xl p-6 ambient-shadow">
                 <h3 className="font-headline font-bold text-sm mb-4">
-                  Garment Specs
+                  {locale === "es" ? "Especificaciones de la prenda" : locale === "pt" ? "Especificações da peça" : "Garment Specs"}
                 </h3>
                 <div className="flex flex-col gap-2.5">
                   {[
-                    { label: "Garment", value: garment.name },
-                    { label: "Category", value: garment.category },
+                    { label: locale === "es" ? "Prenda" : locale === "pt" ? "Peça" : "Garment", value: garment.name },
+                    { label: locale === "es" ? "Categoría" : locale === "pt" ? "Categoria" : "Category", value: garment.category },
                     {
-                      label: "Print Areas",
-                      value: `${garment.printAreas} area${garment.printAreas > 1 ? "s" : ""}`,
+                      label: locale === "es" ? "Áreas de impresión" : locale === "pt" ? "Áreas de impressão" : "Print Areas",
+                      value:
+                        locale === "es"
+                          ? `${garment.printAreas} área${garment.printAreas > 1 ? "s" : ""}`
+                          : locale === "pt"
+                            ? `${garment.printAreas} área${garment.printAreas > 1 ? "s" : ""}`
+                            : `${garment.printAreas} area${garment.printAreas > 1 ? "s" : ""}`,
                     },
                     {
-                      label: "Colors",
-                      value: `${garment.colors.length} variants`,
+                      label: locale === "es" ? "Colores" : locale === "pt" ? "Cores" : "Colors",
+                      value:
+                        locale === "es"
+                          ? `${garment.colors.length} variantes`
+                          : locale === "pt"
+                            ? `${garment.colors.length} variantes`
+                            : `${garment.colors.length} variants`,
                     },
                     {
-                      label: "Front Objects",
+                      label: locale === "es" ? "Objetos frontales" : locale === "pt" ? "Objetos da frente" : "Front Objects",
                       value: `${frontObjects.length}`,
                     },
-                    { label: "Back Objects", value: `${backObjects.length}` },
+                    {
+                      label: locale === "es" ? "Objetos traseros" : locale === "pt" ? "Objetos das costas" : "Back Objects",
+                      value: `${backObjects.length}`,
+                    },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex justify-between items-center py-1.5 border-b border-outline-variant/10 last:border-0">
                       <span className="text-[10px] font-label font-bold text-outline uppercase tracking-widest">
@@ -296,11 +371,11 @@ export default function ReviewPage({ params }: PageProps) {
               className="w-full"
               onClick={() => setShowExport(true)}
             >
-              Export Renders
+              {locale === "es" ? "Exportar renders" : locale === "pt" ? "Exportar renders" : "Export Renders"}
             </Button>
             <Link href={`/studio/${garmentId}`}>
               <Button variant="secondary" size="md" className="w-full">
-                Back to Editor
+                {t("review.backToEditor")}
               </Button>
             </Link>
           </div>

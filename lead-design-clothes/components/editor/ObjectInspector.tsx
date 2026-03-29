@@ -6,6 +6,7 @@
 
 import { useEditorStore } from "@/lib/store/useEditorStore";
 import { Button } from "@/components/ui/Button";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export function ObjectInspector() {
   const objects = useEditorStore((s) => s.objects);
@@ -13,6 +14,7 @@ export function ObjectInspector() {
   const updateObject = useEditorStore((s) => s.updateObject);
   const removeObject = useEditorStore((s) => s.removeObject);
   const duplicateObject = useEditorStore((s) => s.duplicateObject);
+  const { locale } = useLanguage();
 
   const obj = objects.find((o) => o.id === selectedObjectId);
 
@@ -22,7 +24,13 @@ export function ObjectInspector() {
         <svg className="w-8 h-8 text-outline-variant" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672ZM12 2.25V4.5m5.834.166-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243-1.59-1.59" />
         </svg>
-        <span className="text-center">Select an object on the canvas to inspect</span>
+        <span className="text-center">
+          {locale === "es"
+            ? "Selecciona un objeto en el lienzo para inspeccionarlo"
+            : locale === "pt"
+              ? "Selecione um objeto na tela para inspecionar"
+              : "Select an object on the canvas to inspect"}
+        </span>
       </div>
     );
   }
@@ -36,14 +44,30 @@ export function ObjectInspector() {
       <div className="px-5 py-4 border-b border-outline-variant/10 flex items-center justify-between">
         <div className="min-w-0">
           <p className="text-xs font-label font-bold text-outline uppercase tracking-widest">
-            {obj.type}
+            {obj.type === "text"
+              ? locale === "es"
+                ? "texto"
+                : locale === "pt"
+                  ? "texto"
+                  : "text"
+              : obj.type === "image"
+                ? locale === "es"
+                  ? "imagen"
+                  : locale === "pt"
+                    ? "imagem"
+                    : "image"
+                : locale === "es"
+                  ? "ia-generada"
+                  : locale === "pt"
+                    ? "ia-gerada"
+                    : "ai-generated"}
           </p>
           <p className="text-sm font-bold text-on-surface truncate">{obj.name}</p>
         </div>
         <button
           onClick={() => removeObject(obj.id)}
           className="text-outline hover:text-error transition-colors ml-2 shrink-0"
-          title="Delete"
+          title={locale === "es" ? "Eliminar" : locale === "pt" ? "Excluir" : "Delete"}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -55,7 +79,7 @@ export function ObjectInspector() {
         {/* Position */}
         <section>
           <p className="text-[10px] font-label font-bold text-outline uppercase tracking-widest mb-2">
-            Position
+            {locale === "es" ? "Posición" : locale === "pt" ? "Posição" : "Position"}
           </p>
           <div className="grid grid-cols-2 gap-2">
             <div>
@@ -82,7 +106,7 @@ export function ObjectInspector() {
         {/* Size */}
         <section>
           <p className="text-[10px] font-label font-bold text-outline uppercase tracking-widest mb-2">
-            Size
+            {locale === "es" ? "Tamaño" : locale === "pt" ? "Tamanho" : "Size"}
           </p>
           <div className="grid grid-cols-2 gap-2">
             <div>
@@ -110,7 +134,7 @@ export function ObjectInspector() {
         <section>
           <div className="flex items-center justify-between mb-2">
             <p className="text-[10px] font-label font-bold text-outline uppercase tracking-widest">
-              Rotation
+              {locale === "es" ? "Rotación" : locale === "pt" ? "Rotação" : "Rotation"}
             </p>
             <span className="text-xs text-on-surface font-medium">{Math.round(obj.rotation)}°</span>
           </div>
@@ -128,7 +152,7 @@ export function ObjectInspector() {
         <section>
           <div className="flex items-center justify-between mb-2">
             <p className="text-[10px] font-label font-bold text-outline uppercase tracking-widest">
-              Opacity
+              {locale === "es" ? "Opacidad" : locale === "pt" ? "Opacidade" : "Opacity"}
             </p>
             <span className="text-xs text-on-surface font-medium">{Math.round(obj.opacity * 100)}%</span>
           </div>
@@ -147,7 +171,7 @@ export function ObjectInspector() {
         {obj.type === "text" && (
           <section>
             <p className="text-[10px] font-label font-bold text-outline uppercase tracking-widest mb-2">
-              Text Color
+              {locale === "es" ? "Color del texto" : locale === "pt" ? "Cor do texto" : "Text Color"}
             </p>
             <div className="flex items-center gap-3">
               <input
@@ -167,20 +191,20 @@ export function ObjectInspector() {
         {(obj.type === "image" || obj.type === "ai-generated") && (
           <section>
             <p className="text-[10px] font-label font-bold text-outline uppercase tracking-widest mb-2">
-              Flip
+              {locale === "es" ? "Voltear" : locale === "pt" ? "Espelhar" : "Flip"}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => update({ flipX: !(obj as import("@/lib/types/domain").ImageDesignObject).flipX } as Partial<import("@/lib/types/domain").ImageDesignObject>)}
                 className="flex-1 py-1.5 text-xs rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors"
               >
-                Flip H
+                {locale === "es" ? "Voltear H" : locale === "pt" ? "Espelhar H" : "Flip H"}
               </button>
               <button
                 onClick={() => update({ flipY: !(obj as import("@/lib/types/domain").ImageDesignObject).flipY } as Partial<import("@/lib/types/domain").ImageDesignObject>)}
                 className="flex-1 py-1.5 text-xs rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors"
               >
-                Flip V
+                {locale === "es" ? "Voltear V" : locale === "pt" ? "Espelhar V" : "Flip V"}
               </button>
             </div>
           </section>
@@ -195,7 +219,7 @@ export function ObjectInspector() {
           className="w-full"
           onClick={() => duplicateObject(obj.id)}
         >
-          Duplicate
+          {locale === "es" ? "Duplicar" : locale === "pt" ? "Duplicar" : "Duplicate"}
         </Button>
       </div>
     </div>

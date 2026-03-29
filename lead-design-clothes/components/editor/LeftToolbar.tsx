@@ -6,6 +6,7 @@
 "use client";
 
 import { useEditorStore } from "@/lib/store/useEditorStore";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import type { ActivePanel } from "@/lib/types/domain";
 import { cn } from "@/lib/utils/cn";
 
@@ -75,6 +76,34 @@ const TOOLS: Tool[] = [
 export function LeftToolbar() {
   const activePanel = useEditorStore((s) => s.activePanel);
   const setActivePanel = useEditorStore((s) => s.setActivePanel);
+  const { locale } = useLanguage();
+
+  const labels = {
+    en: {
+      upload: "Upload",
+      text: "Text",
+      ai: "AI Art",
+      layers: "Layers",
+      colors: "Colors",
+      "bg-remove": "Remove BG",
+    },
+    es: {
+      upload: "Subir",
+      text: "Texto",
+      ai: "Arte IA",
+      layers: "Capas",
+      colors: "Colores",
+      "bg-remove": "Quitar fondo",
+    },
+    pt: {
+      upload: "Enviar",
+      text: "Texto",
+      ai: "Arte IA",
+      layers: "Camadas",
+      colors: "Cores",
+      "bg-remove": "Remover fundo",
+    },
+  } as const;
 
   const handleClick = (id: ActivePanel) => {
     setActivePanel(activePanel === id ? null : id);
@@ -85,7 +114,7 @@ export function LeftToolbar() {
       {TOOLS.map((tool) => (
         <button
           key={tool.id}
-          title={tool.label}
+          title={labels[locale][tool.id as keyof typeof labels.en] ?? tool.label}
           onClick={() => handleClick(tool.id)}
           className={cn(
             "flex flex-col items-center justify-center gap-1 w-14 h-14 rounded-xl transition-all",
@@ -95,7 +124,9 @@ export function LeftToolbar() {
           )}
         >
           {tool.icon}
-          <span className="text-[9px] font-label font-semibold uppercase tracking-wide">{tool.label}</span>
+          <span className="text-[9px] font-label font-semibold uppercase tracking-wide">
+            {labels[locale][tool.id as keyof typeof labels.en] ?? tool.label}
+          </span>
         </button>
       ))}
     </div>

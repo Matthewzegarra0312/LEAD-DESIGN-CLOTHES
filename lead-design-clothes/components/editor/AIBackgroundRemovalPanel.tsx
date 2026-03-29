@@ -11,6 +11,7 @@ import { useEditorStore } from "@/lib/store/useEditorStore";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
 import type { ImageDesignObject, AIGeneratedDesignObject } from "@/lib/types/domain";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type Toggle = {
   label: string;
@@ -27,6 +28,61 @@ export function AIBackgroundRemovalPanel() {
   const objects = useEditorStore((s) => s.objects);
   const selectedObjectId = useEditorStore((s) => s.selectedObjectId);
   const updateObject = useEditorStore((s) => s.updateObject);
+  const { locale } = useLanguage();
+
+  const copy = {
+    en: {
+      title: "AI Background Removal",
+      desc: "Remove image backgrounds instantly using on-device AI. No API key required.",
+      noneTitle: "No image selected",
+      noneDesc: "Upload an image and select it on the canvas, then come back here to remove its background.",
+      preview: "Preview Comparison",
+      original: "Original",
+      result: "Result",
+      loading: "Loading...",
+      applied: "Applied",
+      processing: "Processing...",
+      remove: "Remove Background",
+      apply: "Apply to Design →",
+      appliedDone: "✓ Applied to Design",
+      powered:
+        "Powered by @imgly/background-removal — runs fully in your browser using WebAssembly AI. 100% free, no data sent to any server.",
+    },
+    es: {
+      title: "Eliminación de fondo con IA",
+      desc: "Elimina fondos de imágenes al instante usando IA en el dispositivo. No requiere API key.",
+      noneTitle: "No hay una imagen seleccionada",
+      noneDesc: "Sube una imagen y selecciónala en el lienzo; luego vuelve aquí para quitar su fondo.",
+      preview: "Comparación de vista previa",
+      original: "Original",
+      result: "Resultado",
+      loading: "Cargando...",
+      applied: "Aplicado",
+      processing: "Procesando...",
+      remove: "Quitar fondo",
+      apply: "Aplicar al diseño →",
+      appliedDone: "✓ Aplicado al diseño",
+      powered:
+        "Funciona con @imgly/background-removal y se ejecuta completamente en tu navegador con WebAssembly AI. 100% gratis, sin enviar datos a ningún servidor.",
+    },
+    pt: {
+      title: "Remoção de fundo por IA",
+      desc: "Remova fundos de imagens instantaneamente usando IA no dispositivo. Não requer chave de API.",
+      noneTitle: "Nenhuma imagem selecionada",
+      noneDesc: "Envie uma imagem e selecione-a na tela; depois volte aqui para remover o fundo.",
+      preview: "Comparação da prévia",
+      original: "Original",
+      result: "Resultado",
+      loading: "Carregando...",
+      applied: "Aplicado",
+      processing: "Processando...",
+      remove: "Remover fundo",
+      apply: "Aplicar ao design →",
+      appliedDone: "✓ Aplicado ao design",
+      powered:
+        "Desenvolvido com @imgly/background-removal — roda totalmente no navegador usando WebAssembly AI. 100% grátis, sem enviar dados para nenhum servidor.",
+    },
+  } as const;
 
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -96,10 +152,10 @@ export function AIBackgroundRemovalPanel() {
       {/* Header */}
       <div>
         <h3 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-1">
-          AI Background Removal
+          {copy[locale].title}
         </h3>
         <p className="text-xs text-on-surface-variant">
-          Remove image backgrounds instantly using on-device AI. No API key required.
+          {copy[locale].desc}
         </p>
       </div>
 
@@ -112,9 +168,9 @@ export function AIBackgroundRemovalPanel() {
               <rect x="3" y="3" width="18" height="18" rx="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <p className="text-sm font-medium text-on-surface">No image selected</p>
+          <p className="text-sm font-medium text-on-surface">{copy[locale].noneTitle}</p>
           <p className="text-xs text-outline leading-relaxed">
-            Upload an image and select it on the canvas, then come back here to remove its background.
+            {copy[locale].noneDesc}
           </p>
         </div>
       )}
@@ -124,7 +180,7 @@ export function AIBackgroundRemovalPanel() {
         <>
           <div>
             <p className="text-[10px] font-label font-bold text-outline uppercase tracking-widest mb-2">
-              Preview Comparison
+              {copy[locale].preview}
             </p>
             <div className="grid grid-cols-2 gap-2">
               {/* Original */}
@@ -137,7 +193,7 @@ export function AIBackgroundRemovalPanel() {
                   unoptimized
                 />
                 <span className="absolute bottom-1 left-1 text-[9px] font-label uppercase bg-black/60 text-white px-1.5 py-0.5 rounded">
-                  Original
+                  {copy[locale].original}
                 </span>
               </div>
 
@@ -154,7 +210,7 @@ export function AIBackgroundRemovalPanel() {
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-surface-container/90 z-10">
                     <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     <span className="text-[10px] font-label text-primary font-bold">
-                      {progress > 0 ? `${progress}%` : "Loading…"}
+                      {progress > 0 ? `${progress}%` : copy[locale].loading}
                     </span>
                   </div>
                 )}
@@ -169,12 +225,12 @@ export function AIBackgroundRemovalPanel() {
                 )}
                 {!resultSrc && !processing && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] text-outline font-label uppercase">Result</span>
+                    <span className="text-[10px] text-outline font-label uppercase">{copy[locale].result}</span>
                   </div>
                 )}
                 {applied && (
                   <div className="absolute top-1 right-1 bg-green-500 text-white text-[9px] font-label uppercase px-1.5 py-0.5 rounded">
-                    Applied
+                    {copy[locale].applied}
                   </div>
                 )}
               </div>
@@ -192,14 +248,14 @@ export function AIBackgroundRemovalPanel() {
             {processing ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                Processing…
+                {copy[locale].processing}
               </>
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
                 </svg>
-                Remove Background
+                {copy[locale].remove}
               </>
             )}
           </Button>
@@ -217,7 +273,21 @@ export function AIBackgroundRemovalPanel() {
                 key={t.key}
                 className="flex items-center justify-between py-2.5 border-b border-outline-variant/10 cursor-pointer"
               >
-                <span className="text-sm text-on-surface">{t.label}</span>
+                <span className="text-sm text-on-surface">
+                  {locale === "en"
+                    ? t.label
+                    : locale === "es"
+                      ? t.key === "autoDetect"
+                        ? "Detectar sujeto automáticamente"
+                        : t.key === "refineEdges"
+                          ? "Refinar bordes"
+                          : "Mantener transparencia"
+                      : t.key === "autoDetect"
+                        ? "Detectar assunto automaticamente"
+                        : t.key === "refineEdges"
+                          ? "Refinar bordas"
+                          : "Manter transparência"}
+                </span>
                 <button
                   role="switch"
                   aria-checked={toggles[t.key]}
@@ -247,7 +317,7 @@ export function AIBackgroundRemovalPanel() {
               onClick={handleApply}
               disabled={applied}
             >
-              {applied ? "✓ Applied to Design" : "Apply to Design →"}
+              {applied ? copy[locale].appliedDone : copy[locale].apply}
             </Button>
           )}
         </>
@@ -259,7 +329,7 @@ export function AIBackgroundRemovalPanel() {
           <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
         </svg>
         <p className="text-[11px] text-on-surface-variant leading-relaxed">
-          Powered by <span className="font-bold text-on-surface">@imgly/background-removal</span> — runs fully in your browser using WebAssembly AI. 100% free, no data sent to any server.
+          {copy[locale].powered}
         </p>
       </div>
     </div>

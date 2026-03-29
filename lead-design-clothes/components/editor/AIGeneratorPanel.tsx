@@ -15,6 +15,7 @@ import { generateAIImage } from "@/lib/services/aiImageGeneration";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
 import type { AIStylePreset, AIGenerationResult } from "@/lib/types/domain";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const STYLE_PRESETS: { label: string; value: AIStylePreset }[] = [
   { label: "Minimal", value: "minimal" },
@@ -29,6 +30,73 @@ export function AIGeneratorPanel() {
   const addObject = useEditorStore((s) => s.addObject);
   const activeSide = useEditorStore((s) => s.activeSide);
   const canvasSize = useEditorStore((s) => s.canvasSize);
+  const { locale } = useLanguage();
+
+  const copy = {
+    en: {
+      title: "AI Art Generator",
+      desc: "Describe a design and generate AI artwork for your garment.",
+      prompt: "Prompt",
+      promptPlaceholder: "e.g. A wolf howling at the moon, vintage poster style...",
+      ctrl: "Ctrl+Enter to generate",
+      style: "Style",
+      error: "Error generating image. Try again.",
+      generating: "Generating...",
+      regenerate: "Regenerate",
+      generateFour: "Generate 4 Variations",
+      variations: "4 Variations",
+      selected: "{count} selected",
+      tap: "Tap to select",
+      failed: "Failed to load",
+      added: "Added",
+      addAll: "Add All 4",
+      addSelected: "Add {count} Selected",
+      selectImages: "Select Images",
+      hint: "Edit the prompt above and click Regenerate to get new variations",
+    },
+    es: {
+      title: "Generador de arte con IA",
+      desc: "Describe un diseño y genera arte con IA para tu prenda.",
+      prompt: "Prompt",
+      promptPlaceholder: "ej. Un lobo aullando a la luna, estilo póster vintage...",
+      ctrl: "Ctrl+Enter para generar",
+      style: "Estilo",
+      error: "Error al generar. Intenta de nuevo.",
+      generating: "Generando...",
+      regenerate: "Regenerar",
+      generateFour: "Generar 4 variaciones",
+      variations: "4 variaciones",
+      selected: "{count} seleccionadas",
+      tap: "Toca para seleccionar",
+      failed: "No se pudo cargar",
+      added: "Agregado",
+      addAll: "Agregar las 4",
+      addSelected: "Agregar {count} seleccionadas",
+      selectImages: "Seleccionar imágenes",
+      hint: "Edita el prompt de arriba y haz clic en Regenerar para obtener nuevas variaciones",
+    },
+    pt: {
+      title: "Gerador de arte por IA",
+      desc: "Descreva um design e gere arte por IA para sua peça.",
+      prompt: "Prompt",
+      promptPlaceholder: "ex. Um lobo uivando para a lua, estilo pôster vintage...",
+      ctrl: "Ctrl+Enter para gerar",
+      style: "Estilo",
+      error: "Erro ao gerar. Tente novamente.",
+      generating: "Gerando...",
+      regenerate: "Gerar novamente",
+      generateFour: "Gerar 4 variações",
+      variations: "4 variações",
+      selected: "{count} selecionadas",
+      tap: "Toque para selecionar",
+      failed: "Falha ao carregar",
+      added: "Adicionado",
+      addAll: "Adicionar as 4",
+      addSelected: "Adicionar {count} selecionadas",
+      selectImages: "Selecionar imagens",
+      hint: "Edite o prompt acima e clique em Gerar novamente para obter novas variações",
+    },
+  } as const;
 
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState<AIStylePreset>("illustration");
@@ -58,7 +126,7 @@ export function AIGeneratorPanel() {
       });
       setResults(resultList);
     } catch {
-      setError("Error al generar. Intenta de nuevo.");
+      setError(copy[locale].error);
     } finally {
       setLoading(false);
     }
@@ -118,17 +186,17 @@ export function AIGeneratorPanel() {
     <div className="p-5 flex flex-col gap-5 overflow-y-auto no-scrollbar">
       <div>
         <h3 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-1">
-          AI Art Generator
+          {copy[locale].title}
         </h3>
         <p className="text-xs text-on-surface-variant">
-          Describe a design and generate AI artwork for your garment.
+          {copy[locale].desc}
         </p>
       </div>
 
       {/* Prompt */}
       <div>
         <label className="text-[10px] font-label font-bold text-outline uppercase tracking-widest block mb-1.5">
-          Prompt
+          {copy[locale].prompt}
         </label>
         <textarea
           value={prompt}
@@ -137,16 +205,16 @@ export function AIGeneratorPanel() {
             if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleGenerate();
           }}
           rows={3}
-          placeholder="e.g. A wolf howling at the moon, vintage poster style…"
+          placeholder={copy[locale].promptPlaceholder}
           className="w-full bg-surface-container border border-outline-variant/20 rounded-xl px-3 py-2 text-sm text-on-surface placeholder-outline focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none transition"
         />
-        <p className="text-[9px] text-outline mt-1">Ctrl+Enter to generate</p>
+        <p className="text-[9px] text-outline mt-1">{copy[locale].ctrl}</p>
       </div>
 
       {/* Style */}
       <div>
         <label className="text-[10px] font-label font-bold text-outline uppercase tracking-widest block mb-1.5">
-          Style
+          {copy[locale].style}
         </label>
         <div className="flex flex-wrap gap-2">
           {STYLE_PRESETS.map((s) => (
@@ -160,7 +228,31 @@ export function AIGeneratorPanel() {
                   : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
               )}
             >
-              {s.label}
+              {locale === "en"
+                ? s.label
+                : locale === "es"
+                  ? s.value === "minimal"
+                    ? "Minimalista"
+                    : s.value === "streetwear"
+                      ? "Streetwear"
+                      : s.value === "vintage"
+                        ? "Vintage"
+                        : s.value === "corporate"
+                          ? "Corporativo"
+                          : s.value === "graffiti"
+                            ? "Grafiti"
+                            : "Ilustración"
+                  : s.value === "minimal"
+                    ? "Minimalista"
+                    : s.value === "streetwear"
+                      ? "Streetwear"
+                      : s.value === "vintage"
+                        ? "Vintage"
+                        : s.value === "corporate"
+                          ? "Corporativo"
+                          : s.value === "graffiti"
+                            ? "Grafite"
+                            : "Ilustração"}
             </button>
           ))}
         </div>
@@ -180,7 +272,7 @@ export function AIGeneratorPanel() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
           </svg>
         )}
-        {loading ? "Generating…" : hasResults ? "Regenerate" : "Generate 4 Variations"}
+        {loading ? copy[locale].generating : hasResults ? copy[locale].regenerate : copy[locale].generateFour}
       </Button>
 
       {error && (
@@ -194,10 +286,12 @@ export function AIGeneratorPanel() {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-label font-bold text-outline uppercase tracking-widest">
-              4 Variations
+              {copy[locale].variations}
             </p>
             <p className="text-[9px] text-outline">
-              {selectedCount > 0 ? `${selectedCount} selected` : "Tap to select"}
+              {selectedCount > 0
+                ? copy[locale].selected.replace("{count}", String(selectedCount))
+                : copy[locale].tap}
             </p>
           </div>
 
@@ -222,7 +316,7 @@ export function AIGeneratorPanel() {
                   {!isLoaded && !hasError && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-surface-container">
                       <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                      <span className="text-[9px] text-outline">Generating…</span>
+                      <span className="text-[9px] text-outline">{copy[locale].generating}</span>
                     </div>
                   )}
 
@@ -232,7 +326,7 @@ export function AIGeneratorPanel() {
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                       </svg>
-                      <span className="text-[9px]">Failed to load</span>
+                      <span className="text-[9px]">{copy[locale].failed}</span>
                     </div>
                   )}
 
@@ -271,7 +365,7 @@ export function AIGeneratorPanel() {
                   {/* "Added" badge */}
                   {wasAdded && !isSelected && (
                     <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-tertiary/90 text-on-tertiary text-[8px] font-bold px-1.5 py-0.5 rounded-full">
-                      Added ✓
+                      {copy[locale].added} ✓
                     </div>
                   )}
 
@@ -292,7 +386,7 @@ export function AIGeneratorPanel() {
               className="flex-1 text-xs"
               onClick={handleAddAll}
             >
-              Add All 4
+              {copy[locale].addAll}
             </Button>
             <Button
               variant="key-action"
@@ -301,12 +395,14 @@ export function AIGeneratorPanel() {
               disabled={selectedCount === 0}
               onClick={handleAddSelected}
             >
-              {selectedCount > 0 ? `Add ${selectedCount} Selected` : "Select Images"}
+              {selectedCount > 0
+                ? copy[locale].addSelected.replace("{count}", String(selectedCount))
+                : copy[locale].selectImages}
             </Button>
           </div>
 
           <p className="text-[9px] text-outline text-center">
-            Edit the prompt above and click <strong>Regenerate</strong> to get new variations
+            {copy[locale].hint}
           </p>
         </div>
       )}

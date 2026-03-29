@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useEditorStore } from "@/lib/store/useEditorStore";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const FONT_FAMILIES = ["Manrope", "Inter", "Georgia", "Courier New", "Impact"];
 const PRESETS = [
@@ -20,8 +21,57 @@ export function TextToolPanel() {
   const addObject = useEditorStore((s) => s.addObject);
   const activeSide = useEditorStore((s) => s.activeSide);
   const canvasSize = useEditorStore((s) => s.canvasSize);
+  const { locale } = useLanguage();
 
-  const [text, setText] = useState("Your Text");
+  const copy = {
+    en: {
+      title: "Text Tool",
+      desc: "Add text elements to the garment canvas.",
+      headline: "Headline",
+      subtitle: "Subtitle",
+      body: "Body",
+      content: "Text Content",
+      font: "Font",
+      size: "Size",
+      style: "Style",
+      align: "Align",
+      color: "Color",
+      add: "Add to Canvas",
+      placeholder: "Your Text",
+    },
+    es: {
+      title: "Herramienta de texto",
+      desc: "Agrega elementos de texto al lienzo de la prenda.",
+      headline: "Titular",
+      subtitle: "Subtítulo",
+      body: "Cuerpo",
+      content: "Contenido del texto",
+      font: "Fuente",
+      size: "Tamaño",
+      style: "Estilo",
+      align: "Alineación",
+      color: "Color",
+      add: "Agregar al lienzo",
+      placeholder: "Tu texto",
+    },
+    pt: {
+      title: "Ferramenta de texto",
+      desc: "Adicione elementos de texto à tela da peça.",
+      headline: "Título",
+      subtitle: "Subtítulo",
+      body: "Corpo",
+      content: "Conteúdo do texto",
+      font: "Fonte",
+      size: "Tamanho",
+      style: "Estilo",
+      align: "Alinhamento",
+      color: "Cor",
+      add: "Adicionar à tela",
+      placeholder: "Seu texto",
+    },
+  } as const;
+
+  const [text, setText] = useState(copy[locale].placeholder);
   const [fontFamily, setFontFamily] = useState("Manrope");
   const [fontSize, setFontSize] = useState(48);
   const [fontStyle, setFontStyle] = useState<"normal" | "bold" | "italic" | "bold italic">("bold");
@@ -60,10 +110,10 @@ export function TextToolPanel() {
     <div className="p-5 flex flex-col gap-5 overflow-y-auto no-scrollbar">
       <div>
         <h3 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-1">
-          Text Tool
+          {copy[locale].title}
         </h3>
         <p className="text-xs text-on-surface-variant">
-          Add text elements to the garment canvas.
+          {copy[locale].desc}
         </p>
       </div>
 
@@ -79,7 +129,11 @@ export function TextToolPanel() {
             }}
             className="flex-1 py-2 text-xs rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors font-medium text-on-surface-variant"
           >
-            {p.label}
+            {p.label === "Headline"
+              ? copy[locale].headline
+              : p.label === "Subtitle"
+                ? copy[locale].subtitle
+                : copy[locale].body}
           </button>
         ))}
       </div>
@@ -87,7 +141,7 @@ export function TextToolPanel() {
       {/* Text input */}
       <div>
         <label className="text-[10px] font-label font-bold text-outline uppercase tracking-widest block mb-1.5">
-          Text Content
+          {copy[locale].content}
         </label>
         <textarea
           value={text}
@@ -100,7 +154,7 @@ export function TextToolPanel() {
       {/* Font family */}
       <div>
         <label className="text-[10px] font-label font-bold text-outline uppercase tracking-widest block mb-1.5">
-          Font
+          {copy[locale].font}
         </label>
         <select
           value={fontFamily}
@@ -117,7 +171,7 @@ export function TextToolPanel() {
       <div>
         <div className="flex items-center justify-between mb-1.5">
           <label className="text-[10px] font-label font-bold text-outline uppercase tracking-widest">
-            Size
+            {copy[locale].size}
           </label>
           <span className="text-xs text-on-surface font-medium">{fontSize}px</span>
         </div>
@@ -134,7 +188,7 @@ export function TextToolPanel() {
       {/* Style toggles */}
       <div>
         <label className="text-[10px] font-label font-bold text-outline uppercase tracking-widest block mb-1.5">
-          Style
+          {copy[locale].style}
         </label>
         <div className="flex gap-2">
           {(["normal", "bold", "italic", "bold italic"] as const).map((s) => (
@@ -148,7 +202,23 @@ export function TextToolPanel() {
                   : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
               )}
             >
-              {s}
+              {locale === "en"
+                ? s
+                : locale === "es"
+                  ? s === "normal"
+                    ? "normal"
+                    : s === "bold"
+                      ? "negrita"
+                      : s === "italic"
+                        ? "cursiva"
+                        : "negrita cursiva"
+                  : s === "normal"
+                    ? "normal"
+                    : s === "bold"
+                      ? "negrito"
+                      : s === "italic"
+                        ? "itálico"
+                        : "negrito itálico"}
             </button>
           ))}
         </div>
@@ -157,7 +227,7 @@ export function TextToolPanel() {
       {/* Align */}
       <div>
         <label className="text-[10px] font-label font-bold text-outline uppercase tracking-widest block mb-1.5">
-          Align
+          {copy[locale].align}
         </label>
         <div className="flex gap-2">
           {(["left", "center", "right"] as const).map((a) => (
@@ -171,7 +241,19 @@ export function TextToolPanel() {
                   : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
               )}
             >
-              {a}
+              {locale === "en"
+                ? a
+                : locale === "es"
+                  ? a === "left"
+                    ? "izquierda"
+                    : a === "center"
+                      ? "centro"
+                      : "derecha"
+                  : a === "left"
+                    ? "esquerda"
+                    : a === "center"
+                      ? "centro"
+                      : "direita"}
             </button>
           ))}
         </div>
@@ -180,7 +262,7 @@ export function TextToolPanel() {
       {/* Color */}
       <div>
         <label className="text-[10px] font-label font-bold text-outline uppercase tracking-widest block mb-1.5">
-          Color
+          {copy[locale].color}
         </label>
         <div className="flex items-center gap-3">
           <input
@@ -194,7 +276,7 @@ export function TextToolPanel() {
       </div>
 
       <Button variant="primary" size="md" className="w-full mt-auto" onClick={handleAdd}>
-        Add to Canvas
+        {copy[locale].add}
       </Button>
     </div>
   );

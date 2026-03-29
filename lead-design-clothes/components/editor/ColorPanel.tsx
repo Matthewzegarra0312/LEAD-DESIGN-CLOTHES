@@ -5,16 +5,36 @@
 "use client";
 
 import { useEditorStore } from "@/lib/store/useEditorStore";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
 export function ColorPanel() {
   const garment = useEditorStore((s) => s.garment);
   const selectedColorId = useEditorStore((s) => s.selectedColorId);
   const setSelectedColor = useEditorStore((s) => s.setSelectedColor);
+  const { locale } = useLanguage();
+
+  const copy = {
+    en: {
+      none: "No garment selected.",
+      title: "Garment Color",
+      desc: "Select the base fabric colour for your garment.",
+    },
+    es: {
+      none: "No hay una prenda seleccionada.",
+      title: "Color de la prenda",
+      desc: "Selecciona el color base de la tela para tu prenda.",
+    },
+    pt: {
+      none: "Nenhuma peça selecionada.",
+      title: "Cor da peça",
+      desc: "Selecione a cor base do tecido para sua peça.",
+    },
+  } as const;
 
   if (!garment) {
     return (
-      <div className="p-5 text-sm text-outline">No garment selected.</div>
+      <div className="p-5 text-sm text-outline">{copy[locale].none}</div>
     );
   }
 
@@ -24,10 +44,10 @@ export function ColorPanel() {
     <div className="p-5 flex flex-col gap-5">
       <div>
         <h3 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-1">
-          Garment Color
+          {copy[locale].title}
         </h3>
         <p className="text-xs text-on-surface-variant">
-          Select the base fabric colour for your garment.
+          {copy[locale].desc}
         </p>
       </div>
 

@@ -5,6 +5,7 @@
 "use client";
 
 import { useEditorStore } from "@/lib/store/useEditorStore";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import { cn } from "@/lib/utils/cn";
 
 export function LayersPanel() {
@@ -17,18 +18,36 @@ export function LayersPanel() {
   const bringForward = useEditorStore((s) => s.bringForward);
   const sendBackward = useEditorStore((s) => s.sendBackward);
   const getObjectsForSide = useEditorStore((s) => s.getObjectsForSide);
+  const { locale } = useLanguage();
 
   const objects = getObjectsForSide(activeSide).slice().reverse(); // top layer first
+  const sideLabel =
+    activeSide === "front"
+      ? locale === "es"
+        ? "frente"
+        : locale === "pt"
+          ? "frente"
+          : "front"
+      : locale === "es"
+        ? "espalda"
+        : locale === "pt"
+          ? "costas"
+          : "back";
+  const suffix = objects.length !== 1 ? "s" : "";
 
   return (
     <div className="p-5 flex flex-col gap-4 h-full overflow-y-auto no-scrollbar">
       <div>
         <h3 className="text-xs font-label font-bold text-outline uppercase tracking-widest mb-1">
-          Layers
+          {locale === "es" ? "Capas" : locale === "pt" ? "Camadas" : "Layers"}
         </h3>
         <p className="text-xs text-on-surface-variant">
-          {objects.length} object{objects.length !== 1 ? "s" : ""} on{" "}
-          <span className="font-bold">{activeSide}</span>
+          {locale === "es"
+            ? `${objects.length} objeto${suffix} en `
+            : locale === "pt"
+              ? `${objects.length} objeto${suffix} em `
+              : `${objects.length} object${suffix} on `}
+          <span className="font-bold">{sideLabel}</span>
         </p>
       </div>
 
@@ -37,8 +56,16 @@ export function LayersPanel() {
           <svg className="w-10 h-10 text-outline-variant mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
           </svg>
-          <p className="text-sm font-medium">No layers yet</p>
-          <p className="text-xs mt-1">Upload an image or add text</p>
+          <p className="text-sm font-medium">
+            {locale === "es" ? "Aún no hay capas" : locale === "pt" ? "Ainda não há camadas" : "No layers yet"}
+          </p>
+          <p className="text-xs mt-1">
+            {locale === "es"
+              ? "Sube una imagen o agrega texto"
+              : locale === "pt"
+                ? "Envie uma imagem ou adicione texto"
+                : "Upload an image or add text"}
+          </p>
         </div>
       ) : (
         <div className="flex flex-col gap-1">
@@ -81,7 +108,19 @@ export function LayersPanel() {
                 {/* Visibility */}
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleVisibility(obj.id); }}
-                  title={obj.visible ? "Hide" : "Show"}
+                  title={
+                    obj.visible
+                      ? locale === "es"
+                        ? "Ocultar"
+                        : locale === "pt"
+                          ? "Ocultar"
+                          : "Hide"
+                      : locale === "es"
+                        ? "Mostrar"
+                        : locale === "pt"
+                          ? "Mostrar"
+                          : "Show"
+                  }
                   className="w-5 h-5 flex items-center justify-center text-outline hover:text-on-surface transition-colors"
                 >
                   {obj.visible ? (
@@ -99,7 +138,19 @@ export function LayersPanel() {
                 {/* Lock */}
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleLock(obj.id); }}
-                  title={obj.locked ? "Unlock" : "Lock"}
+                  title={
+                    obj.locked
+                      ? locale === "es"
+                        ? "Desbloquear"
+                        : locale === "pt"
+                          ? "Desbloquear"
+                          : "Unlock"
+                      : locale === "es"
+                        ? "Bloquear"
+                        : locale === "pt"
+                          ? "Bloquear"
+                          : "Lock"
+                  }
                   className="w-5 h-5 flex items-center justify-center text-outline hover:text-on-surface transition-colors"
                 >
                   {obj.locked ? (
@@ -116,7 +167,7 @@ export function LayersPanel() {
                 {/* Delete */}
                 <button
                   onClick={(e) => { e.stopPropagation(); removeObject(obj.id); }}
-                  title="Delete"
+                  title={locale === "es" ? "Eliminar" : locale === "pt" ? "Excluir" : "Delete"}
                   className="w-5 h-5 flex items-center justify-center text-outline hover:text-error transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -132,11 +183,29 @@ export function LayersPanel() {
       {/* Layer order controls (only when something selected) */}
       {selectedObjectId && (
         <div className="mt-auto pt-4 border-t border-outline-variant/10">
-          <p className="text-[10px] text-outline font-label uppercase tracking-widest mb-2">Layer Order</p>
+          <p className="text-[10px] text-outline font-label uppercase tracking-widest mb-2">
+            {locale === "es" ? "Orden de capas" : locale === "pt" ? "Ordem das camadas" : "Layer Order"}
+          </p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { label: "Bring Forward", action: () => bringForward(selectedObjectId) },
-              { label: "Send Backward", action: () => sendBackward(selectedObjectId) },
+              {
+                label:
+                  locale === "es"
+                    ? "Traer adelante"
+                    : locale === "pt"
+                      ? "Trazer para frente"
+                      : "Bring Forward",
+                action: () => bringForward(selectedObjectId),
+              },
+              {
+                label:
+                  locale === "es"
+                    ? "Enviar atrás"
+                    : locale === "pt"
+                      ? "Enviar para trás"
+                      : "Send Backward",
+                action: () => sendBackward(selectedObjectId),
+              },
             ].map(({ label, action }) => (
               <button
                 key={label}
