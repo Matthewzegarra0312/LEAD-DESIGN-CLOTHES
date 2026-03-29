@@ -129,7 +129,7 @@ Built at Sundai Latam Hack (March 29, 2026).
 |---|---|
 | Matthew Zegarra | https://github.com/Matthewzegarra0312 |
 | Daniel Ibanez | https://github.com/danieibazgc |
-| Marcio Zinanyuca | (https://github.com/marciozinanyuca) |
+| Marcio Zinanyuca | https://github.com/marciozinanyuca |
 | Joaquin Chaparro | (add profile) |
 | Jonathan Tuppia | (add profile) |
 
