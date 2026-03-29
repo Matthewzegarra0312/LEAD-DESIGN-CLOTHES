@@ -1,3 +1,4 @@
+Demo 
 # LEAD Design Clothes
 
 AI-powered apparel mockup studio to design, customize, and export garment previews from the browser.
@@ -128,7 +129,7 @@ Built at Sundai Latam Hack (March 29, 2026).
 |---|---|
 | Matthew Zegarra | https://github.com/Matthewzegarra0312 |
 | Daniel Ibanez | https://github.com/danieibazgc |
-| Marcio Zinanyuca | (add profile) |
+| Marcio Zinanyuca | (https://github.com/marciozinanyuca) |
 | Joaquin Chaparro | (add profile) |
 | Jonathan Tuppia | (add profile) |
 
